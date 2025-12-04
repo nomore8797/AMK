@@ -1,4 +1,4 @@
-# AMK
+#
 artel_demo.py
 """
 ARTEL :: Open Concept Module
