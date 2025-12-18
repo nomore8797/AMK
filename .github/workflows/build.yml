@@ -1,0 +1,23 @@
+name: Build sanity check
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show repository structure
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Files:"
+          ls -la
+
+      - name: Sanity OK
+        run: echo "CI pipeline is alive"
