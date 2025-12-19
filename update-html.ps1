@@ -1,22 +1,27 @@
-# Путь к локальному файлу
+# Параметры
 $localFile = "C:\AMK\index.html"
-
-# Имя контейнера
 $containerName = "amk-test"
+$containerPath = "/usr/share/nginx/html/index.html"
 
-# Порт на хосте и в контейнере
-$hostPort = 8080
-$containerPort = 80
-
-# Проверяем и удаляем старый контейнер
-$existing = docker ps -a --filter "name=$containerName" --format "{{.ID}}"
-if ($existing) {
-    Write-Host "Удаляем старый контейнер $containerName ($existing)..."
-    docker rm -f $containerName | Out-Null
+# Проверка, что локальный файл существует
+if (-Not (Test-Path $localFile)) {
+    Write-Host "Файл $localFile не найден!"
+    exit
 }
 
-# Запускаем новый контейнер
-Write-Host "Запускаем новый контейнер $containerName..."
-docker run -d -p $hostPort:$containerPort --name $containerName -v "$localFile:/usr/share/nginx/html/index.html" nginx:alpine
+# Получаем время последнего изменения файла
+$lastWrite = (Get-Item $localFile).LastWriteTime
 
-Write-Host "Контейнер $containerName запущен! Открой http://localhost:$hostPort"
+Write-Host "Мониторинг файла $localFile. Нажмите Ctrl+C для остановки."
+
+while ($true) {
+    Start-Sleep -Seconds 1
+    $currentWrite = (Get-Item $localFile).LastWriteTime
+    if ($currentWrite -ne $lastWrite) {
+        # Файл изменился
+        docker cp $localFile "${containerName}:$containerPath"
+        docker exec $containerName nginx -s reload
+        Write-Host "[$(Get-Date -Format 'HH:mm:ss')] index.html обновлён в контейнере."
+        $lastWrite = $currentWrite
+    }
+}
