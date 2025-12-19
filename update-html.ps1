@@ -19,7 +19,7 @@ while ($true) {
 
     if ($currentWriteTime -gt $lastWriteTime) {
         # Файл обновлён
-        docker cp "$localFile" "${containerName}:$containerPath"
+        docker cp "${localFile}" "${containerName}:${containerPath}"
         docker exec $containerName nginx -s reload
         Write-Host "$(Get-Date -Format 'HH:mm:ss') - Файл обновлён и Nginx перезагружен."
         $lastWriteTime = $currentWriteTime
