@@ -1,8 +1,10 @@
-name: Build sanity check
+name: Build
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -12,12 +14,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Show repository structure
+      - name: Show repository contents
         run: |
-          echo "Current directory:"
-          pwd
-          echo "Files:"
+          echo "Repository files:"
           ls -la
 
-      - name: Sanity OK
-        run: echo "CI pipeline is alive"
+      - name: Done
+        run: echo "Build workflow
+finished successfully" 
